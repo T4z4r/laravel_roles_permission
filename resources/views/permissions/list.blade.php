@@ -54,7 +54,7 @@
 
                     </table>
 
-                    <div class="py-3">
+                    <div class="my-3">
                         {{ $permissions->links() }}
 
                     </div>
@@ -64,4 +64,7 @@
             </div>
         </div>
     </div>
+    <x-slot name="script">
+  
+    </x-slot>
 </x-app-layout>

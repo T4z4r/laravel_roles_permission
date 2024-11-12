@@ -72,9 +72,16 @@ class PermissionController extends Controller
     }
 
     // This method will delete permission in DB
-    public function destroy($id)
+    public function destroy($id,Request $request)
     {
         $permission = Permission::findOrFail($id);
+
+        // Check if permission is assigned to any role
+        if ($permission->roles->count() > 0) {
+            return redirect()->route('permissions.index')->with('error', 'Permission is assigned to a role and can not be deleted!');
+        }
+
+        // Delete permission from DB
         $permission->delete();
 
         return redirect()->route('permissions.index')->with('success', 'Permission Deleted Successfully!');
