@@ -46,7 +46,7 @@ class PermissionController extends Controller
     public function edit($id)
     {
         $data['permission'] = Permission::findOrFail($id);
-
+        
         return view('permissions.edit', $data);
     }
 
