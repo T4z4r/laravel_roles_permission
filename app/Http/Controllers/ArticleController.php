@@ -14,6 +14,7 @@ class ArticleController extends Controller
     public function index()
     {
         $data['articles']=Article::latest()->paginate(10);
+        $data['count']=1;
 
         return view('articles.list',$data);
     }
@@ -68,7 +69,10 @@ class ArticleController extends Controller
      */
     public function edit(string $id)
     {
-        return view('articles.edit');
+
+        $data['article']=Article::findOrFail($id);
+
+        return view('articles.edit',$data);
 
     }
 
@@ -77,7 +81,27 @@ class ArticleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validator= Validator::make($request->all(),[
+            'title' =>'required|string|min:5',
+            'author' =>'required|string|max:255',
+        ]);
+
+
+        if($validator->fails()){
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+        else
+        {
+            // store data in the database
+            $article= Article::findOrFail($id);
+            $article->title = $request->title;
+            $article->author = $request->author;
+            $article->text = $request->text;
+            $article->save();
+
+            return redirect()->route('articles.index')->with('success','Article updated successfully');
+
+        }
     }
 
     /**
@@ -85,6 +109,15 @@ class ArticleController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $article = Article::findOrFail($id);
+
+        if ($article==null) {
+            return back()->with('error', 'Article does not exist');
+        }
+
+        // Delete article from DB
+        $article->delete();
+
+        return redirect()->route('articles.index')->with('success', 'Article was Deleted Successfully!');
     }
 }
