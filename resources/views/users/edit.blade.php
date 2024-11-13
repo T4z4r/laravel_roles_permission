@@ -24,11 +24,26 @@
                             </div>
                             <label for="email" class="text-sm font-medium">Email</label>
                             <div class="mb-3">
-                                <input type="text" email="email" value="{{ $user->email }}"  id="email" placeholder="Enter Email"  class="border-grey-300 shadow-sm w-1/2 rounded-lg" id="">
+                                <input type="text" name="email" value="{{ $user->email }}"  id="email" placeholder="Enter Email"  class="border-grey-300 shadow-sm w-1/2 rounded-lg" id="">
                                 @error('email')
                                     <p class="text-red-400">  {{ $message }}</p>
                                 @enderror
                             </div>
+
+
+                        <div class="grid grid-cols-4 mb-3">
+                            @if ($roles->isNotEmpty())
+
+                                @foreach ($roles as $role)
+                                <div class="mt-3">
+
+                                    <input  {{ $hasRoles->contains($role->id)?'checked':'' }}  type="checkbox" class="rounded"  id="role-{{ $role->id }}" name="role[]"
+                                        value="{{ $role->name }}">
+                                    <label for="role-{{ $role->id }}">{{ $role->name }}</label>
+                                </div>
+                                @endforeach
+                            @endif
+                    </div>
                         </div>
                         <button type="submit" class="bg-slate-700 text-sm rounded-md text-white px-5 py-3" >Update</button>
                     </form>
