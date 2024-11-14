@@ -6,9 +6,24 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Routing\Controllers\HasMiddleware;
 
-class UserController extends Controller
+
+class UserController extends Controller implements HasMiddleware
 {
+
+    public static function middleware(): array
+    {
+        return [
+            // examples with aliases, pipe-separated names, guards, etc:
+            new Middleware('permission:view users', only: ['index']),
+            new Middleware('permission:create user', only: ['index']),
+            new Middleware('permission:edit user', only: ['index']),
+            new Middleware('permission:delete user', only: ['index']),
+        ];
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -25,7 +40,8 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        $data['roles']=Role::latest()->get();
+        return view('users.create',$data);
     }
 
     /**

@@ -5,9 +5,23 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class PermissionController extends Controller
+class PermissionController extends Controller implements HasMiddleware
 {
+
+    public static function middleware(): array
+    {
+        return [
+            // examples with aliases, pipe-separated names, guards, etc:
+            new Middleware('permission:add permission', only: ['index']),
+            new Middleware('permission:view permissions', only: ['index']),
+            new Middleware('permission:edit permission', only: ['index']),
+            new Middleware('permission:delete permission', only: ['index']),
+        ];
+    }
+
 
     // This method will show permissions page
     public function index()
@@ -46,7 +60,7 @@ class PermissionController extends Controller
     public function edit($id)
     {
         $data['permission'] = Permission::findOrFail($id);
-        
+
         return view('permissions.edit', $data);
     }
 

@@ -33,7 +33,7 @@
                                         <td class="px-6 py-3 text-left">{{ $count++ }}</td>
                                         <td class="px-6 py-3 text-left">{{ $user->name }}</td>
                                         <td class="px-6 py-3 text-left">{{ $user->email }}</td>
-                                        <td class="px-6 py-3 text-left">{{ $user->role?->name }}</td>
+                                        <td class="px-6 py-3 text-left">{{ $user->roles->pluck('name')->implode(',') }}</td>
                                         <td class="px-6 py-3 text-left">{{  \Carbon\Carbon::parse($user->created_at)->format('d M,Y') }}</td>
                                         <td class="px-6 py-3 text-center">
 

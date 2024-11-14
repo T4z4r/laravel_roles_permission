@@ -5,18 +5,33 @@ namespace App\Http\Controllers;
 use App\Models\Article;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use  Illuminate\Routing\Controllers\Middleware;
 
-class ArticleController extends Controller
+class ArticleController extends Controller implements HasMiddleware
 {
+
+    public static function middleware(): array
+    {
+        return [
+            // examples with aliases, pipe-separated names, guards, etc:
+            new Middleware('permission:view articles', only: ['index']),
+            new Middleware('permission:add articles', only: ['index']),
+            new Middleware('permission:edit articles', only: ['index']),
+            new Middleware('permission:delete articles', only: ['index']),
+        ];
+    }
+
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $data['articles']=Article::latest()->paginate(10);
-        $data['count']=1;
+        $data['articles'] = Article::latest()->paginate(10);
+        $data['count'] = 1;
 
-        return view('articles.list',$data);
+        return view('articles.list', $data);
     }
 
     /**
@@ -33,25 +48,22 @@ class ArticleController extends Controller
     public function store(Request $request)
     {
 
-        $validator= Validator::make($request->all(),[
-            'title' =>'required|string|min:5',
-            'author' =>'required|string|max:255',
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|min:5',
+            'author' => 'required|string|max:255',
         ]);
 
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
-        }
-        else
-        {
+        } else {
             // store data in the database
-            $article= new Article();
+            $article = new Article();
             $article->title = $request->title;
             $article->author = $request->author;
             $article->text = $request->text;
             $article->save();
-            return redirect()->route('articles.index')->with('success','Article created successfully');
-
+            return redirect()->route('articles.index')->with('success', 'Article created successfully');
         }
     }
 
@@ -61,7 +73,6 @@ class ArticleController extends Controller
     public function show(string $id)
     {
         return view('articles.show');
-
     }
 
     /**
@@ -70,10 +81,9 @@ class ArticleController extends Controller
     public function edit(string $id)
     {
 
-        $data['article']=Article::findOrFail($id);
+        $data['article'] = Article::findOrFail($id);
 
-        return view('articles.edit',$data);
-
+        return view('articles.edit', $data);
     }
 
     /**
@@ -81,26 +91,23 @@ class ArticleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $validator= Validator::make($request->all(),[
-            'title' =>'required|string|min:5',
-            'author' =>'required|string|max:255',
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|min:5',
+            'author' => 'required|string|max:255',
         ]);
 
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
-        }
-        else
-        {
+        } else {
             // store data in the database
-            $article= Article::findOrFail($id);
+            $article = Article::findOrFail($id);
             $article->title = $request->title;
             $article->author = $request->author;
             $article->text = $request->text;
             $article->save();
 
-            return redirect()->route('articles.index')->with('success','Article updated successfully');
-
+            return redirect()->route('articles.index')->with('success', 'Article updated successfully');
         }
     }
 
@@ -111,7 +118,7 @@ class ArticleController extends Controller
     {
         $article = Article::findOrFail($id);
 
-        if ($article==null) {
+        if ($article == null) {
             return back()->with('error', 'Article does not exist');
         }
 
